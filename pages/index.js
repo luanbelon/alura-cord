@@ -35,7 +35,7 @@ function Titulo(props) {
 
 export default function PaginaInicial() {
   //criando uma const com desestruturação.
-  const [username, setUsername] = React.useState('omariosouto');
+  const [username, setUsername] = React.useState('luanbelon');
   const roteamento = useRouter();
   const usernameValide = username.length + 1 > 2;
 
