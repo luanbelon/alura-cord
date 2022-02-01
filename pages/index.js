@@ -79,7 +79,7 @@ export default function PaginaInicial() {
               console.log("formulario submetido")
               event.preventDefault();
 
-              roteamento.push('/chat')
+              roteamento.push(`/chat?username${username}`)
             }}
             styleSheet={{
               display: "flex",

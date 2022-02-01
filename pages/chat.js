@@ -1,20 +1,48 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
+import {createClient} from '@supabase/supabase-js';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker'
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQxNDc3MiwiZXhwIjoxOTU4OTkwNzcyfQ.-R8IRjjUTBFIDPJfUfGqoNHSRuo1khQVM4suLSoRfbE';
+const SUPABASE_URL = 'https://alhoilaekmktmaytcbvp.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
   // Sua lógica vai aqui
+  const roteamento = useRouter();
+  const usuarioLogado = roteamento.query.username;
   const [mensagem, setMensagem] = React.useState("");
   const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
+
+  React.useEffect(() => {
+    supabaseClient
+    .from('mensagens')
+    .select('*')
+    .order('id', {ascending: false})
+    .then(({data}) => {
+        setListaDeMensagens(data);
+    })
+  }, [])
 
   // ./Sua lógica vai aqui
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
-      id: listaDeMensagens.length + 1,
-      de: "luanbelon",
+      de: usuarioLogado,
       texto: novaMensagem,
     };
-    setListaDeMensagens([mensagem, ...listaDeMensagens]);
+
+    supabaseClient
+        .from('mensagens')
+        .insert([mensagem])
+        .then(({data}) => {
+            console.log('criando mensagem: ', data);
+            setListaDeMensagens([
+                data[0],
+                ...listaDeMensagens,
+            ]);
+        });
+
     setMensagem("");
   }
   return (
@@ -24,7 +52,7 @@ export default function ChatPage() {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: appConfig.theme.colors.primary[500],
-        backgroundImage: `url(https://virtualbackgrounds.site/wp-content/uploads/2020/08/the-matrix-digital-rain.jpg)`,
+        backgroundImage: `url(https://images.pexels.com/photos/5253574/pexels-photo-5253574.jpeg?cs=srgb&dl=pexels-hoangloc-dang-5253574.jpg&fm=jpg)`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundBlendMode: "multiply",
@@ -99,6 +127,7 @@ export default function ChatPage() {
                 color: appConfig.theme.colors.neutrals[200],
               }}
             />
+            <ButtonSendSticker />
           </Box>
         </Box>
       </Box>
